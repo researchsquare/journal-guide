@@ -13,15 +13,19 @@ A modern containerized full-stack application with **Next.js frontend** and **Ex
 ```
 project-root/
 ├── client/                          # Next.js frontend application
-│   ├── pages/
-│   │   └── index.js                # Main homepage
+│   ├── src/app
+│   │   └── page.js                # Main homepage
 │   ├── package.json                # Frontend dependencies
-│   ├── .env.local                  # Frontend environment variables
 │   └── Dockerfile                  # Frontend container config
 ├── server/                          # Express backend application
 │   ├── app.js                      # Main server file
 │   ├── package.json                # Backend dependencies
 │   └── Dockerfile                  # Backend container config
+├── config/                          # Next.js frontend application
+│   ├── autoload
+│   │   └── dist
+│   │   └── local         
+│   ├── loader.json                
 ├── .env                            # Environment configuration
 ├── docker-compose.yml              # Container orchestration
 ├── Makefile                        # Build automation commands
@@ -237,21 +241,6 @@ ENABLE_LOGGING=true
 ENABLE_CORS=true
 ```
 
-### Customizing Ports
-
-To run on different ports, edit `.env`:
-```bash
-FRONTEND_PORT=8080  # Frontend will run on port 8080
-BACKEND_PORT=8001   # Backend will run on port 8001
-```
-
-Then restart:
-```bash
-make reset
-```
-
----
-
 ## 🔍 Monitoring & Troubleshooting
 
 ### 🏥 **Health Checks**
@@ -373,7 +362,6 @@ docker-compose restart frontend
 |----------|--------|-------------|----------|
 | `/` | GET | Main API endpoint | Environment info |
 | `/health` | GET | Health check | System status |
-| `/api/config` | GET | Configuration info | Safe config data |
 
 ### Response Examples
 
@@ -393,31 +381,6 @@ docker-compose restart frontend
   "environment": "development"
 }
 ```
-
-#### Config Endpoint (`GET /api/config`)
-```json
-{
-  "backend": "working",
-  "environment": "development"
-}
-```
-
-### Testing APIs
-
-```bash
-# Test backend health
-curl http://localhost:5001/health
-
-# Test main endpoint
-curl http://localhost:5001/
-
-# Test config endpoint
-curl http://localhost:5001/api/config
-
-# Check current environment via API
-curl http://localhost:5001/health | grep environment
-```
-
 ---
 
 ## 🔒 Security Best Practices
@@ -549,45 +512,6 @@ make reset
 
 ---
 
-## 📋 Git Workflow
-
-### Check Configuration Status
-```bash
-# Check which config files have changes
-make git-config
-```
-
-### Commit Changes
-```bash
-# Add all changes
-git add .
-
-# Commit with descriptive message
-git commit -m "feat: add new API endpoint"
-
-# Push changes
-git push origin main
-```
-
-### Branch Strategy
-```bash
-# Create feature branch
-git checkout -b feature/new-endpoint
-
-# Make changes and test
-make simple
-# ... develop and test ...
-
-# Commit changes
-git add .
-git commit -m "feat: implement new feature"
-
-# Push feature branch
-git push origin feature/new-endpoint
-```
-
----
-
 ## 🆘 Getting Help
 
 ### Quick Diagnostics
@@ -685,32 +609,10 @@ make prod        # Production environment
 - 🔗 **Backend**: http://localhost:5001  
 - 💚 **Health**: http://localhost:5001/health
 
-### **File Locations**
-- 📁 **Frontend**: `client/`
-- 📁 **Backend**: `server/`
-- ⚙️ **Config**: `.env`
-- 🐳 **Docker**: `docker-compose.yml`
-
 ### **Environment Check**
 ```bash
 make check-env   # Shows current NODE_ENV, ports, container status
 ```
-
----
-
-## 📄 License
-
-[Add your license information here]
-
----
-
-## 📞 Support & Contact
-
-- 🐛 **Issues**: [GitHub Issues](your-github-issues-url)
-- 📧 **Email**: [your-email]
-- 💬 **Discord/Slack**: [your-community-link]
-
----
 
 **🚀 Happy Coding! Your full-stack Docker application is ready for development!**
 
