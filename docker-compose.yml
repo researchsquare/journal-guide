@@ -7,7 +7,8 @@ services:
       - "${FRONTEND_PORT:-3000}:3000"
     env_file:
       - .env
-    image: myapp-frontend:latest
+    image: journalguide-frontend:latest
+    container_name: journalguide-frontend
 
   backend:
     build:
@@ -17,4 +18,5 @@ services:
       - "${BACKEND_PORT:-5001}:5001"
     env_file:
       - .env
-    image: myapp-backend:latest
+    image: journalguide-backend:latest
+    container_name: journalguide-backend

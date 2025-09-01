@@ -3,6 +3,9 @@
 include .env
 export
 
+FRONTEND_CONTAINER = journalguide-frontend
+BACKEND_CONTAINER = journalguide-backend
+
 help:
 	@echo "🐳 Docker Full Stack Management"
 	@echo "==============================="
@@ -116,7 +119,7 @@ nuke:
 	@echo "⚠️  This will remove containers, images, and volumes!"
 	@read -p "Are you sure? [y/N]: " confirm && [ "$$confirm" = "y" ]
 	docker-compose down -v
-	docker rmi -f myapp-frontend:latest myapp-backend:latest || true
+	docker rmi -f journalguide-frontend:latest journalguide-backend:latest || true
 	docker system prune -f
 	@echo "💀 Everything destroyed!"
 	@echo "💡 Run 'make simple' to rebuild everything"
@@ -126,7 +129,7 @@ info:
 	@echo "============================="
 	@echo ""
 	@echo "🖼️  Project Images:"
-	@docker images | grep -E "(myapp-|REPOSITORY)" || echo "No project images found"
+	@docker images | grep -E "(journalguide-|REPOSITORY)" || echo "No project images found"
 	@echo ""
 	@echo "📦 Containers:"
 	@docker ps -a --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}" | grep -E "(journal-guide|NAMES)" || echo "No project containers found"
@@ -189,3 +192,11 @@ backup:
 	@mkdir -p backups
 	@tar -czf backups/config-backup-$$(date +%Y%m%d-%H%M%S).tar.gz .env docker-compose.yml */Dockerfile */package.json 2>/dev/null || true
 	@echo "✅ Backup created in backups/ directory"
+
+# Bash into frontend container
+bash-frontend:
+	docker exec -it $(FRONTEND_CONTAINER) sh
+
+# Bash into backend container
+bash-backend:
+	docker exec -it $(BACKEND_CONTAINER) sh
