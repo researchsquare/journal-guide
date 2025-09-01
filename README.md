@@ -444,12 +444,12 @@ make stats
 ### Docker Hub Deployment
 ```bash
 # Tag images
-docker tag myapp-frontend:latest yourname/myapp-frontend:v1.0
-docker tag myapp-backend:latest yourname/myapp-backend:v1.0
+docker tag journalguide-frontend:latest yourname/journalguide-frontend:v1.0
+docker tag journalguide-backend:latest yourname/journalguide-backend:v1.0
 
 # Push to registry
-docker push yourname/myapp-frontend:v1.0  
-docker push yourname/myapp-backend:v1.0
+docker push yourname/journalguide-frontend:v1.0  
+docker push yourname/journalguide-backend:v1.0
 ```
 
 ---
