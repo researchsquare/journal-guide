@@ -4,7 +4,7 @@
   "description": "Express backend with autoload configuration",
   "main": "app.js",
   "scripts": {
-    "start": "node app.js",
+    "start": "node --watch app.js",
     "dev": "NODE_ENV=development node app.js",
     "staging": "NODE_ENV=staging node app.js", 
     "prod": "NODE_ENV=production node app.js",
