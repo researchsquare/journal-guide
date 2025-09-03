@@ -16,6 +16,9 @@ services:
       dockerfile: Dockerfile
     ports:
       - "${BACKEND_PORT:-5001}:5001"
+    volumes:
+      - ./backend:/app
+      - /app/node_modules 
     env_file:
       - .env
     image: journalguide-backend:latest
