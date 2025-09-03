@@ -17,7 +17,7 @@ services:
     ports:
       - "${BACKEND_PORT:-5001}:5001"
     volumes:
-      - ./backend:/app
+      - ./server:/app
       - /app/node_modules 
     env_file:
       - .env
