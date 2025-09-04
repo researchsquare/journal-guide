@@ -18,8 +18,10 @@ services:
       - "${BACKEND_PORT:-5001}:5001"
     volumes:
       - ./server:/app
-      - /app/node_modules 
+      - /app/node_modules
     env_file:
       - .env
     image: journalguide-backend:latest
     container_name: journalguide-backend
+    tty: true
+    stdin_open: true

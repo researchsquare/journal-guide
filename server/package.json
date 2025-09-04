@@ -4,10 +4,10 @@
   "description": "Express backend with autoload configuration",
   "main": "app.js",
   "scripts": {
-    "start": "node --watch app.js",
-    "dev": "NODE_ENV=development node app.js",
-    "staging": "NODE_ENV=staging node app.js", 
-    "prod": "NODE_ENV=production node app.js",
+    "start": "nodemon src/app.js",
+    "dev": "NODE_ENV=development nodemon src/app.js",
+    "staging": "NODE_ENV=staging nodemon src/app.js",
+    "prod": "NODE_ENV=production node src/app.js",
     "setup-config": "node ../scripts/setup-config.js",
     "setup-config:dev": "NODE_ENV=development node ../scripts/setup-config.js",
     "setup-config:prod": "NODE_ENV=production node ../scripts/setup-config.js",
@@ -17,5 +17,8 @@
     "express": "^4.18.0",
     "cors": "^2.8.5",
     "dotenv": "^16.0.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
   }
 }

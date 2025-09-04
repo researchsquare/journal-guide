@@ -6,6 +6,8 @@ COPY package*.json ./
 
 RUN npm install
 
+COPY nodemon.json ./
+
 COPY . .
 
 EXPOSE 5001
