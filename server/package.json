@@ -4,14 +4,10 @@
   "description": "Express backend with autoload configuration",
   "main": "app.js",
   "scripts": {
-    "start": "nodemon src/app.js",
-    "dev": "NODE_ENV=development nodemon src/app.js",
-    "staging": "NODE_ENV=staging nodemon src/app.js",
-    "prod": "NODE_ENV=production node src/app.js",
-    "setup-config": "node ../scripts/setup-config.js",
-    "setup-config:dev": "NODE_ENV=development node ../scripts/setup-config.js",
-    "setup-config:prod": "NODE_ENV=production node ../scripts/setup-config.js",
-    "setup-config:docker": "NODE_ENV=docker node ../scripts/setup-config.js"
+    "start": "node --watch src/app.js",
+    "dev": "NODE_ENV=development node src/app.js",
+    "staging": "NODE_ENV=staging node src/app.js",
+    "prod": "NODE_ENV=production node src/app.js"
   },
   "dependencies": {
     "express": "^4.18.0",
