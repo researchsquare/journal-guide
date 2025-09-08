@@ -10,7 +10,7 @@ export default function AppPage() {
 
   return (
     <div>
-      <h1>Dashboard</h1>
+      <h1>Journal Guide</h1>
       <button onClick={() => dispatch(fetchUser(1))}>Fetch User</button>
 
       {loading && <p>Loading...</p>}
