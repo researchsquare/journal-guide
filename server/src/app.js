@@ -1,14 +1,11 @@
 require('dotenv').config();
 const express = require('express');
-const cors = require('cors');
+const errorHandler = require('./middleware/errorHandler');
+const middlewareLoader = require('./middleware/middleware');
 
 const app = express();
 
-// Simple CORS setup
-app.use(cors({
-  origin: ['http://localhost:3000', 'http://frontend:3000'],
-  credentials: true
-}));
+middlewareLoader(app);
 
 app.use(express.json());
 
@@ -37,6 +34,8 @@ app.get('/api/config', (req, res) => {
   });
 });
 
+//Error Handler should be at the end of all routes
+app.use(errorHandler);
 const port = process.env.BACKEND_PORT || 5001;
 
 app.listen(port, '0.0.0.0', () => {
