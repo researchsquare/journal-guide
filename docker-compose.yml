@@ -9,6 +9,10 @@ services:
       - .env
     image: journalguide-frontend:latest
     container_name: journalguide-frontend
+    volumes:
+      - ./client:/app           # Mount local code for hot reload
+      - /app/node_modules       # Avoid overwriting node_modules
+    command: npm run dev
 
   backend:
     build:
