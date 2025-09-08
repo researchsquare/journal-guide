@@ -1,10 +1,12 @@
 require('dotenv').config();
 const express = require('express');
-const corsOptions = require('../config/corsOptions');
+const cors = require('cors');
+const corsOptions = require('./middleware/cors');
+const errorHandler = require('./middleware/errorHandler');
 const helmet = require('helmet');
+const xhrRequired = require('./middleware/xhrRequired');
+
 const app = express();
-const xhrRequired = require('./src/middleware/xhrRequired');
-const errorHandler = require('./src/middleware/errorHandler');
 
 app.use(helmet());
 app.use(xhrRequired);
