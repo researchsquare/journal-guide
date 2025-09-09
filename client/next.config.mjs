@@ -2,7 +2,7 @@
 const nextConfig = {
   reactStrictMode: true,
 
-  webpack: (config, {isServer}) => {
+  webpack: (config) => {
     // Add SVGR for SVGs
     config.module.rules.push({
       test: /\.svg$/i,
