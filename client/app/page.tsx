@@ -3,7 +3,7 @@
 import { useSelector } from 'react-redux';
 import { RootState, useAppDispatch } from '../src/lib/store';
 import { fetchUser } from '../src/slices/userSlice';
-import NavBar from '@/src/components/NavBar';
+import NavBar from '@/src/components/NavBar/NavBar';
 
 export default function AppPage() {
   const dispatch = useAppDispatch();
