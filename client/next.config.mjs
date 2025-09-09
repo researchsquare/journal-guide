@@ -4,7 +4,6 @@ const nextConfig = {
 
   webpack: (config, {isServer}) => {
     // Add SVGR for SVGs
-    console.log("✅ Custom Webpack config is running!", { isServer });
     config.module.rules.push({
       test: /\.svg$/i,
       issuer: /\.[jt]sx?$/,
