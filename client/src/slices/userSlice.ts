@@ -16,7 +16,7 @@ const initialState: UserState = {
 // Async thunk for API call
 export const fetchUser = createAsyncThunk(
   'user/fetchUser',
-  async (id: number, thunkAPI) => {
+  async (id: number, thunkAPI: any) => {
     try {
       const response = await axios.get(`https://jsonplaceholder.typicode.com/users/${id}`);
       return response.data;
