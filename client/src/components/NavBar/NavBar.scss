@@ -25,7 +25,7 @@
         .showSubMenu {
             display: block;
             position: fixed;
-            top: 90px;
+            top: 60px;
             left: 0;
             width: 100vw;
             height: calc(100vh - 90px);
@@ -50,4 +50,44 @@
             background-color: #eaeaea;
         }
     }
+    .hamburger {
+      font-size: 1.8rem;
+      cursor: pointer;
+    }
+    
+    .mobileMenu {
+      background-color: white;
+      border-top: 1px solid #ccc;
+      padding: 1rem;
+      .mainMenuList {
+        .mobileMainMenu {
+          padding: 0.75rem 0;
+          border-bottom: 1px solid #eee;
+          font-weight: 600;
+          cursor: pointer;
+        }
+      }
+      
+      .subMenuList {
+        animation: slideIn 0.3s ease-in-out;
+        .backArrow {
+          cursor: pointer;
+          font-weight: 600;
+          margin-bottom: 1rem;
+          display: inline-block;
+        }
+      }
+      
+      @keyframes slideIn {
+        from {
+          opacity: 0;
+          transform: translateX(15px);
+        }
+        to {
+          opacity: 1;
+          transform: translateX(0);
+        }
+      }
+    }
 }
+
