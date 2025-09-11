@@ -1,0 +1,24 @@
+// Neutrals (Gray Scale)
+$gray-50:  #f5f5f5;
+$gray-100: #eeeeee;
+$gray-200: #eaeaea;
+$gray-300: #d6d6d6;
+$gray-400: #cccccc;
+$gray-600: #6c6c6c;
+$gray-800: #838383;
+$white:    #ffffff;
+
+// Semantic Tokens
+$navbar-bg: $gray-50;
+$btn-bg: $gray-200;
+$submenu-bg: $white;
+
+$btn-border: $gray-400;
+$submenu-border: $gray-400;
+$underline-color: $gray-300;
+
+$text-color: $gray-600;
+$active-text: $white;
+$active-bg: $gray-800;
+
+$icon-bg: $gray-200;
