@@ -160,7 +160,6 @@ const NavBar = ({title}:NavBarProps) => {
 
     return (
         <div className="container-fluid navBar shadow">
-            {/* ---------- DESKTOP NAV ---------- */}
             <div className="row align-items-center d-none d-md-flex">
                 <div className="col-md-9">
                 <div className="d-flex justify-content-evenly p-2">
@@ -209,9 +208,7 @@ const NavBar = ({title}:NavBarProps) => {
                 </div>
             </div>
 
-            {/* ---------- MOBILE NAV ---------- */}
             <div className="d-block d-md-none">
-                {/* Top Bar */}
                 <div className="d-flex justify-content-between align-items-center p-2">
                 <div className="fw-bold">{title}</div>
                 <div className="hamburger" onClick={() => setMobileOpen(!mobileOpen)}>
@@ -221,7 +218,6 @@ const NavBar = ({title}:NavBarProps) => {
 
                 {mobileOpen && (
                 <div className="mobileMenu">
-                    {/* Show Main Menu List */}
                     {selectedMenu === null && (
                     <div className="mainMenuList">
                         {nav.map((item, index) => (
@@ -236,10 +232,8 @@ const NavBar = ({title}:NavBarProps) => {
                     </div>
                     )}
 
-                    {/* Show Selected Submenu */}
                     {selectedMenu !== null && (
                     <div className="subMenuList">
-                        {/* Back Arrow */}
                         <div className="backArrow" onClick={() => setSelectedMenu(null)}>
                         ← Back
                         </div>
