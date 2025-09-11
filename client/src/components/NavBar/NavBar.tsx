@@ -170,7 +170,7 @@ const NavBar = ({title}:NavBarProps) => {
                         className={`${openIndex === index ? 'active' : 'nonActive'} mainMenu`}
                         onClick={() => setOpenIndex(openIndex === index ? null : index)}
                         >
-                        {item.menu} &#129171;
+                        {item.menu}
                         </div>
                         <div className={`${openIndex === index ? 'showSubMenu' : 'hideSubMenu'} p-3`}>
                         <div className="row">
