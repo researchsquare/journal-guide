@@ -1,93 +1,107 @@
-.navBar{
-    background: #f5f5f5;
-    font-weight: 500;
-    .btn{
-        background-color: #eaeaea;
-        border: .1rem solid #ccc;
-        border-radius: .1rem;
-    }
-    .menuItem {
-        position: relative;
-        .mainMenu {
-            cursor: pointer;
-        }
-        .active{
-            background-color: #838383;
-            color: white;
-            padding: .5rem .5rem;
-        }
-        .nonActive{
-            padding: .5rem .5rem;
-        }
-        .hideSubMenu{
-            display: none;
-        }
-        .showSubMenu {
-            display: block;
-            position: fixed;
-            top: 60px;
-            left: 0;
-            width: 100vw;
-            height: calc(100vh - 90px);
-            background-color: white;
-            padding: 2rem;
-            overflow-y: auto;
-            z-index: 1000;
-        }
-        .subDescription{
-            color: #6c6c6c;
-            font-weight: 400;
-            font-size: .8rem;
-        }
-        .underline{
-            width: 3rem;
-            height: 2px;
-            background-color: #d6d6d6;
-        }
-        .icon{
-            height: 2rem;
-            width: 2rem;
-            background-color: #eaeaea;
-        }
-    }
-    .hamburger {
-      font-size: 1.8rem;
+@import '../../styles/variable.scss';
+
+.navBar {
+  background: $navbar-bg;
+  font-weight: 500;
+
+  .btn {
+    background-color: $btn-bg;
+    border: .1rem solid $btn-border;
+    border-radius: .1rem;
+  }
+
+  .menuItem {
+    position: relative;
+
+    .mainMenu {
       cursor: pointer;
     }
-    
-    .mobileMenu {
-      background-color: white;
-      border-top: 1px solid #ccc;
-      padding: 1rem;
-      .mainMenuList {
-        .mobileMainMenu {
-          padding: 0.75rem 0;
-          border-bottom: 1px solid #eee;
-          font-weight: 600;
-          cursor: pointer;
-        }
-      }
-      
-      .subMenuList {
-        animation: slideIn 0.3s ease-in-out;
-        .backArrow {
-          cursor: pointer;
-          font-weight: 600;
-          margin-bottom: 1rem;
-          display: inline-block;
-        }
-      }
-      
-      @keyframes slideIn {
-        from {
-          opacity: 0;
-          transform: translateX(15px);
-        }
-        to {
-          opacity: 1;
-          transform: translateX(0);
-        }
+
+    .active {
+      background-color: $active-bg;
+      color: $active-text;
+      padding: .5rem .5rem;
+    }
+
+    .nonActive {
+      padding: .5rem .5rem;
+    }
+
+    .hideSubMenu {
+      display: none;
+    }
+
+    .showSubMenu {
+      display: block;
+      position: fixed;
+      top: 60px;
+      left: 0;
+      width: 100vw;
+      height: calc(100vh - 90px);
+      background-color: $submenu-bg;
+      padding: 2rem;
+      overflow-y: auto;
+      z-index: 1000;
+    }
+
+    .subDescription {
+      color: $text-color;
+      font-weight: 400;
+      font-size: .8rem;
+    }
+
+    .underline {
+      width: 3rem;
+      height: 2px;
+      background-color: $underline-color;
+    }
+
+    .icon {
+      height: 2rem;
+      width: 2rem;
+      background-color: $icon-bg;
+    }
+  }
+
+  .hamburger {
+    font-size: 1.8rem;
+    cursor: pointer;
+  }
+
+  .mobileMenu {
+    background-color: $submenu-bg;
+    border-top: 1px solid $submenu-border;
+    padding: 1rem;
+
+    .mainMenuList {
+      .mobileMainMenu {
+        padding: 0.75rem 0;
+        border-bottom: 1px solid $gray-100; // replaced #eee with variable
+        font-weight: 600;
+        cursor: pointer;
       }
     }
-}
 
+    .subMenuList {
+      animation: slideIn 0.3s ease-in-out;
+
+      .backArrow {
+        cursor: pointer;
+        font-weight: 600;
+        margin-bottom: 1rem;
+        display: inline-block;
+      }
+    }
+
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateX(15px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+  }
+}
