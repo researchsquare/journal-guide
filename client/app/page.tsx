@@ -4,6 +4,7 @@ import { useSelector } from 'react-redux';
 import { RootState, useAppDispatch } from '../src/lib/store';
 import { fetchUser } from '../src/slices/userSlice';
 import NavBar from '@/src/components/NavBar/NavBar';
+import Footer from '@/src/components/Footer/Footer';
 
 export default function AppPage() {
   const dispatch = useAppDispatch();
@@ -23,6 +24,7 @@ export default function AppPage() {
           <p>{data.email}</p>
         </div>
       )}
+      <Footer title="Footer" />
     </div>
   );
 }
