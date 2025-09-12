@@ -1,6 +1,7 @@
 'use client';
 import React, {useState} from 'react';
 import './NavBar.scss';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 interface NavBarProps {
     title:string;
@@ -169,7 +170,8 @@ const NavBar = ({title}:NavBarProps) => {
                         className={`${openIndex === index ? 'active' : 'nonActive'} mainMenu`}
                         onClick={() => setOpenIndex(openIndex === index ? null : index)}
                         >
-                        {item.menu}
+                            {item.menu}
+                            <span className='ps-2'><FontAwesomeIcon icon={['fas', 'chevron-down']} /></span>
                         </div>
                         <div className={`${openIndex === index ? 'showSubMenu' : 'hideSubMenu'} p-3`}>
                         <div className="row">
