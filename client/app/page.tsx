@@ -2,8 +2,8 @@
 
 import { useSelector } from 'react-redux';
 import { RootState, useAppDispatch } from '../src/lib/store';
-import { fetchUser } from '../src/slices/userSlice';
-import NavBar from '@/src/components/NavBar/NavBar';
+// import { fetchUser } from '../src/slices/userSlice';
+import Header from '@/src/components/Header/Header';
 
 export default function AppPage() {
   const dispatch = useAppDispatch();
@@ -11,9 +11,8 @@ export default function AppPage() {
 
   return (
     <div>
-      <NavBar title="Journal Guide" />
-      <h1>Dashboard</h1>
-      <button onClick={() => dispatch(fetchUser(1))}>Fetch User</button>
+      <Header/>
+      {/* <button onClick={() => dispatch(fetchUser(1))}>Fetch User</button> */}
 
       {loading && <p>Loading...</p>}
       {error && <p style={{ color: 'red' }}>{error}</p>}
