@@ -88,18 +88,7 @@ const Footer = ({ title }: FooterProps) => {
                   Get Started
                 </button>
               </form>
-              <p className="small text-light opacity-75 lh-sm mb-0">
-                By clicking 'Get Started' you agree to receive emails, promotions, and messages
-                from Wiley. In addition, you also agree to Wiley's{' '}
-                <a href="/privacy" className="text-light text-decoration-underline">
-                  Privacy Policy
-                </a>{' '}
-                and{' '}
-                <a href="/terms" className="text-light text-decoration-underline">
-                  Terms of Use
-                </a>
-                .
-              </p>
+               
             </div>
           </div>
         </div>
