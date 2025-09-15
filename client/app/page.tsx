@@ -2,8 +2,8 @@
 
 import { useSelector } from 'react-redux';
 import { RootState, useAppDispatch } from '../src/lib/store';
-// import { fetchUser } from '../src/slices/userSlice';
 import Header from '@/src/components/Header/Header';
+import Footer from '@/src/components/Footer/Footer';
 
 export default function AppPage() {
   const dispatch = useAppDispatch();
@@ -11,9 +11,7 @@ export default function AppPage() {
 
   return (
     <div>
-      <Header/>
-      {/* <button onClick={() => dispatch(fetchUser(1))}>Fetch User</button> */}
-
+      <Header />
       {loading && <p>Loading...</p>}
       {error && <p style={{ color: 'red' }}>{error}</p>}
       {data && (
@@ -22,6 +20,7 @@ export default function AppPage() {
           <p>{data.email}</p>
         </div>
       )}
+      <Footer title="Footer" />
     </div>
   );
 }
