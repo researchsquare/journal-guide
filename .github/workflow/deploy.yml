@@ -1,0 +1,199 @@
+name: deploy
+run-name: ${{ inputs.maintenance && 'MAINTENANCE MODE' || 'deploy'}}
+on:
+  workflow_dispatch:
+    inputs:
+      maintenance:
+        description: 'Deploy maintenance page only'
+        required: false
+        default: false
+        type: boolean
+
+env:
+  AWS_REGION: us-east-1
+    
+jobs:
+  deploy:
+    runs-on: [self-hosted, linux, non-gpu]
+    outputs:
+      application-env: ${{ env.application-env }}
+      deployment-notification-message: ${{ steps.generate-deployment-notification-message.outputs.deployment-notification-message }}
+
+    steps:
+    - name: Verify the build finished successfuly
+      if: ${{ (github.ref == 'refs/heads/production'
+          || github.ref == 'refs/heads/release' || github.ref == 'refs/heads/test' ) && ! inputs.maintenance }}
+      env:
+        GH_TOKEN: ${{ github.token }}
+      run: |
+        gh run list -c ${{ github.sha }} -w build-image --json conclusion | jq 'any(.conclusion == "success")' | grep true \
+        || (echo "::error title=The necessary build has failed::The build associated with the commit ${{ github.sha }} did not succeed. You cannot deploy this work." && exit 1)
+
+    - name: Checkout
+      uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v1-node16
+      with:
+        aws-region: ${{ env.AWS_REGION }}
+
+    - name: Login to Amazon ECR
+      id: login-ecr
+      uses: aws-actions/amazon-ecr-login@v1
+
+    - name: Configure Deployment Environment
+      id: config
+      uses: ./.github/actions/configure
+      with:
+        ecr-registry: ${{ steps.login-ecr.outputs.registry }}
+
+    - name: Upload Airbrake source maps
+      if: ${{ ! inputs.maintenance }}
+      env:
+        AIRBRAKE_JS_PROJECT_ID: ${{ secrets.AIRBRAKE_JS_PROJECT_ID }}
+        AIRBRAKE_JS_PROJECT_KEY: ${{ secrets.AIRBRAKE_JS_PROJECT_KEY }}
+        APPLICATION_ENV: ${{ env.application-env }}
+        TAG: ${{ env.tagged-image }}
+      run: |
+        docker run --rm \
+          --env AIRBRAKE_JS_PROJECT_ID \
+          --env AIRBRAKE_JS_PROJECT_KEY \
+          --env APPLICATION_ENV \
+          "$TAG" \
+          /site/tools/uploadSourceMaps
+
+    - name: Find last successful deployment
+      if: ${{ ! inputs.maintenance }}
+      id: prev
+      env:
+        BRANCH: ${{ env.branch }}
+      run: |
+        PREV_SHA=$(curl -X GET \
+          -H "Authorization: token ${{ github.token }}" \
+          "${GITHUB_API_URL}/repos/${{ github.repository }}/actions/workflows/${{ github.workflow }}.yml/runs?branch=${BRANCH}&status=success" \
+          | jq -r '.workflow_runs[0].head_sha')
+
+        echo "Found commit '${PREV_SHA}'."
+        echo "prev-sha=${PREV_SHA}" >> $GITHUB_ENV
+
+    - name: Put the site into maintenance mode
+      env:
+        APPLICATION_ENV: ${{ env.application-env }}
+        AWS_ACCOUNT_ID: ${{ secrets.OLD_AWS_ACCOUNT_ID }}
+        BRANCH: ${{ env.branch }}
+        PREV_SHA: ${{ env.prev-sha }}
+        TAG: ${{ env.tagged-image }}
+      run: |
+        source .github/bin/deploy.sh
+
+        MIGRATION_LOG=$(git log --no-merges --pretty=format:"- %s -- %an" \
+          "^${PREV_SHA}" HEAD -- data/migrations \
+          || echo "[Error retrieving log]")
+
+        # Put the site into maintenance mode if there are pending migrations.
+        # If there is any uncertainty, then fail safe by showing the
+        # maintenance page.
+        if [[ ! -z "${MIGRATION_LOG}" ]] || [ "${{ inputs.maintenance }}" = "true" ]; then
+          MAINTENANCE=1
+          register_task_definition
+          create_or_update_service
+        fi
+
+    - name: Deploy the site
+      if: ${{ ! inputs.maintenance }}
+      env:
+        APPLICATION_ENV: ${{ env.application-env }}
+        AWS_ACCOUNT_ID: ${{ secrets.OLD_AWS_ACCOUNT_ID }}
+        BRANCH: ${{ env.branch }}
+        TAG: ${{ env.tagged-image }}
+      run: |
+        source .github/bin/deploy.sh
+
+        register_task_definition
+        run_migrations
+        create_or_update_service
+
+    - name: Send Airbrake deployment notification
+      env:
+        AIRBRAKE_JS_PROJECT_ID: ${{ secrets.AIRBRAKE_JS_PROJECT_ID }}
+        AIRBRAKE_JS_PROJECT_KEY: ${{ secrets.AIRBRAKE_JS_PROJECT_KEY }}
+        APPLICATION_ENV: ${{ env.application-env }}
+      run: |
+        if [[ "${{ github.ref }}" == "refs/heads/production" ]]; then
+          AIRBRAKE_PROJECT_ID=${{ secrets.AIRBRAKE_PROJECT_ID }}
+          AIRBRAKE_PROJECT_KEY=${{ secrets.AIRBRAKE_PROJECT_KEY }}
+        else
+          AIRBRAKE_PROJECT_ID=${{ secrets.AIRBRAKE_DEV_PROJECT_ID }}
+          AIRBRAKE_PROJECT_KEY=${{ secrets.AIRBRAKE_DEV_PROJECT_KEY }}
+        fi
+
+        PAYLOAD=$(jq -n \
+          --arg environment "${APPLICATION_ENV}" \
+          --arg repository "https://github.com/${{ github.repository }}" \
+          --arg revision "${{ github.sha }}" \
+          '{"environment": $environment, "repository": $repository, "revision": $revision}')
+
+        curl -X POST \
+          -H "Content-Type: application/json" \
+          --data "${PAYLOAD}" \
+          "https://airbrake.io/api/v4/projects/${AIRBRAKE_PROJECT_ID}/deploys?key=${AIRBRAKE_PROJECT_KEY}"
+
+        curl -X POST \
+          -H "Content-Type: application/json" \
+          --data "${PAYLOAD}" \
+          "https://airbrake.io/api/v4/projects/${AIRBRAKE_JS_PROJECT_ID}/deploys?key=${AIRBRAKE_JS_PROJECT_KEY}"
+
+    - name: Generate deployment notification message
+      id: generate-deployment-notification-message
+      if: ${{ github.ref == 'refs/heads/production' || github.ref == 'refs/heads/release' || github.ref == 'refs/heads/test' }}
+      env:
+        APPLICATION_ENV: ${{ env.application-env }}
+        PREV_SHA: ${{ env.prev-sha }}
+      run: |
+        CHANGE_LOG=$(git log --no-merges --pretty=format:"- %s -- %an" \
+          "^${PREV_SHA}" HEAD \
+          || echo "[Error retrieving log]")
+
+        CHANGE_LOG_LINKS=$(echo "${CHANGE_LOG}" \
+          | sed -E "s@\(#([0-9]*)\)@<https://github.com/${{ github.repository }}/pull/\1|(#\1)>@g")
+
+        if [ "${{ inputs.maintenance }}" = "true" ]; then
+          DEPLOYMENT_NOTIFICATION_MESSAGE=$(printf "The *%s* %s site was just put in MAINTENANCE MODE!" "${{ github.repository }}" "${APPLICATION_ENV}")
+        else
+          DEPLOYMENT_NOTIFICATION_MESSAGE=$(printf "The *%s* site has just completed a deployment to %s with the following changes:\n%s" "${{ github.repository }}" "${APPLICATION_ENV}" "${CHANGE_LOG_LINKS}")
+        fi
+
+        echo "deployment-notification-message<<EOF" >> $GITHUB_OUTPUT
+        echo "${DEPLOYMENT_NOTIFICATION_MESSAGE}" >> $GITHUB_OUTPUT
+        echo "EOF" >> $GITHUB_OUTPUT
+    
+    - name: Send Teams deployment notification
+      if: ${{ github.ref == 'refs/heads/production' || github.ref == 'refs/heads/release' || github.ref == 'refs/heads/test'}}
+      uses: aliencube/microsoft-teams-actions@v0.8.0
+      with:
+        webhook_uri: ${{ secrets.MS_TEAMS_DEPLOYMENT_WEBHOOK_URI }}
+        title: Deployment Complete
+        summary: Deployment Complete
+        text: '${{ steps.generate-deployment-notification-message.outputs.deployment-notification-message }}'
+        theme_color: 90ee90
+
+    - name: Send Teams failure notification
+      if: ${{ failure() && (github.ref == 'refs/heads/production' || github.ref == 'refs/heads/release' || github.ref == 'refs/heads/test')}}
+      uses: aliencube/microsoft-teams-actions@v0.8.0
+      with:
+        webhook_uri: ${{ secrets.MS_TEAMS_DEPLOYMENT_WEBHOOK_URI }}
+        title: "${{ env.application-env }} Deployment Failed"
+        summary: "${{ env.application-env }} Deployment Failed"
+        text: "The ${{ github.repository }} ${{ env.application-env }} deployment failed."
+        theme_color: ff0000
+
+  set-environment:
+    runs-on: [self-hosted, linux, non-gpu]
+    needs: [deploy]
+
+    environment: ${{ needs.deploy.outputs.application-env }}
+    steps:
+    - name: Display deployment environment
+      run: echo ${{ needs.deploy.outputs.application-env }}

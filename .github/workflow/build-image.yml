@@ -1,0 +1,115 @@
+name: build-image
+
+on: [push]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  AWS_REGION: us-east-1
+
+jobs:
+
+  build:
+    runs-on: [self-hosted, linux, non-gpu]
+    outputs:
+      application-env: ${{ env.application-env }}
+      branch: ${{ env.branch }}
+      tag: ${{ env.tagged-image }}
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v1-node16
+      with:
+        aws-region: ${{ env.AWS_REGION }}
+
+    - name: Login to Amazon ECR
+      id: login-ecr
+      uses: aws-actions/amazon-ecr-login@v1
+
+    - name: Configure Deployment Environment
+      id: config
+      uses: ./.github/actions/configure
+      with:
+        ecr-registry: ${{ steps.login-ecr.outputs.registry }}
+
+    - name: Build image
+      id: build
+      env:
+        APPLICATION_ENV: ${{ env.application-env }}
+        AWS_ACCOUNT_ID: ${{ secrets.OLD_AWS_ACCOUNT_ID }}
+        ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        SSH_PRIVATE_KEY: ${{ secrets.GH_DEPLOY_KEY }}
+        AIRBRAKE_DEV_PROJECT_ID: ${{ secrets.AIRBRAKE_DEV_PROJECT_ID }}
+        AIRBRAKE_DEV_PROJECT_KEY: ${{ secrets.AIRBRAKE_DEV_PROJECT_KEY }}
+        TAG: ${{ env.tagged-image }}
+      run: |
+        rm .dockerignore
+
+        export ARES_USER=$(
+          ([[ "${{ github.ref }}" == "refs/heads/dev" ]] && echo "dev") || 
+          ([[ "${{ github.actor }}" == "Gireesh-MR" ]] && echo "gireeshmr") ||
+          ([[ "${{ github.actor }}" == "ajithkumar-MPS" ]] && echo "ajithkumars") ||
+          ([[ "${{ github.actor }}" == "bhakti-mps" ]] && echo "bhaktibenhj") ||
+          ([[ "${{ github.actor }}" == "Nagaraj-MPS" ]] && echo "nagarajn") ||
+          ([[ "${{ github.actor }}" == "Santhosh-mps" ]] && echo "santhoshk") ||
+          ([[ "${{ github.actor }}" == "Harshitsrivastava-dev" ]] && echo "harshitsrivastava") ||
+          ([[ "${{ github.actor }}" == "krishnakanth-mps" ]] && echo "krishnakanthb") ||
+          ([[ "${{ github.actor }}" == "SonaliMpsLtd" ]] && echo "sonaliyadav") ||
+          ([[ "${{ github.actor }}" == "RoopaRavichandran77" ]] && echo "roopar") ||
+          ([[ "${{ github.actor }}" == "RohithVenkateshwarlu24" ]] && echo "rohithsv") ||
+          ([[ "${{ github.actor }}" == "sandeep-n-mps" ]] && echo "sandeepn") ||
+          echo "release"
+        )
+
+        DOCKER_BUILDKIT=1 docker build \
+          --build-arg "APPLICATION_ENV" \
+          --build-arg "ARES_USER" \
+          --build-arg "AWS_ACCOUNT_ID" \
+          --build-arg "GIT_SHA=${{ github.sha }}" \
+          --pull \
+          --tag $TAG \
+          --target "web" \
+          .
+
+    - name: Create assets fingerprint
+      id: fingerprint
+      run: |
+          NOW=$(date +'%Y-%m-%dT%H_%M_%S')
+          echo "FINGERPRINT=${NOW}_${{ github.sha }}" >> $GITHUB_ENV
+
+    - name: Push image to ECR
+      id: push-to-ecr
+      env:
+        TAG: ${{ env.tagged-image }}
+      run: |
+        docker push $TAG
+
+    - name: Teams Notify Build Failure
+      if: ${{ failure() && github.ref == 'refs/heads/production' }}
+      uses: aliencube/microsoft-teams-actions@v0.8.0
+      with:
+        webhook_uri: ${{ secrets.MS_TEAMS_DEPLOYMENT_WEBHOOK_URI }}
+        title: Production build failed
+        summary: Production build failed
+        text: "The ${{ github.repository }} production build failed."
+        theme_color: ff0000
+
+  trigger-deployment:
+    runs-on: [self-hosted, linux, non-gpu]
+    # @TODO CUSTOMER-9791 add "test-js-rtl" to below array after upgrading React Testing Library.
+    needs: [build]
+    if: github.ref == 'refs/heads/release' || github.ref == 'refs/heads/dev'
+
+    steps:
+    - name: Trigger Staging Deployment
+      env:
+        GH_TOKEN: ${{ github.token }}
+      run: |
+        gh workflow run deploy.yml --ref $GITHUB_REF

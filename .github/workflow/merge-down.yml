@@ -1,0 +1,42 @@
+name: merge-down
+
+on:
+  push:
+    branches:
+    - production
+    - release
+
+jobs:
+  merge-down-to-main:
+    runs-on: [self-hosted, linux, non-gpu]
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+        token: ${{ secrets.GH_MERGE_TOKEN }}
+
+    - name: Configure Git
+      run: |
+        git config --local user.email "actions@github.com"
+        git config --local user.name "Github Actions"
+
+    - name: Merge and push production to release
+      if: ${{ github.ref == 'refs/heads/production' }}
+      run: |
+        git checkout release
+        git merge origin/production
+        git push
+
+    - name: Merge and push release to main
+      if: ${{ github.ref == 'refs/heads/release' }}
+      run: |
+        git checkout main
+        git merge origin/release
+        git push
+      
+    - name: Merge and push release to test branch
+      if: ${{ github.ref == 'refs/heads/release' }}
+      run: |
+        git checkout test
+        git merge origin/release
+        git push
