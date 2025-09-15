@@ -2,8 +2,7 @@
 
 import { useSelector } from 'react-redux';
 import { RootState, useAppDispatch } from '../src/lib/store';
-import { fetchUser } from '../src/slices/userSlice';
-import NavBar from '@/src/components/NavBar/NavBar';
+import Header from '@/src/components/Header/Header';
 import Footer from '@/src/components/Footer/Footer';
 
 export default function AppPage() {
@@ -12,10 +11,7 @@ export default function AppPage() {
 
   return (
     <div>
-      <NavBar title="Journal Guide" />
-      <h1>Dashboard</h1>
-      <button onClick={() => dispatch(fetchUser(1))}>Fetch User</button>
-
+      <Header />
       {loading && <p>Loading...</p>}
       {error && <p style={{ color: 'red' }}>{error}</p>}
       {data && (
