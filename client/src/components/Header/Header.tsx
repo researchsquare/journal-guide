@@ -5,7 +5,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 const Header = () => {
   return (
     <>
-    <div className="container-fluid shadow pt-2">
+    <div className="container-fluid shadow py-2">
           <div className="row">
             <h1 className="font-bold col-1 me-4">AJE</h1>
             <div className="col d-flex justify-content-center ms-5">

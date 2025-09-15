@@ -185,7 +185,9 @@ const NavBar = ({title}:NavBarProps) => {
                                     <div key={subSubIndex} className="pb-3">
                                         <div className="row align-items-center">
                                         <div className="col-auto">
-                                            <div className="icon"></div>
+                                            <div className="icon">
+                                                <FontAwesomeIcon icon={['fas', 'search']} />
+                                            </div>
                                         </div>
                                         <div className="col ps-0">
                                             <a href={subSubItem.link} className="text-decoration-none text-dark">
