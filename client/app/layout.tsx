@@ -2,6 +2,7 @@ import FontAwesomeSetup from '@/src/components/FontAwesomeSetup';
 import ReduxProvider from "@/src/providers/ReduxProvider";
 import type { ReactNode } from "react";
 import 'bootstrap/dist/css/bootstrap.min.css'; 
+import '@fortawesome/fontawesome-svg-core/styles.css';
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
