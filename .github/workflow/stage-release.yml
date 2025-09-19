@@ -1,0 +1,30 @@
+name: stage-release
+
+on:
+  workflow_dispatch
+
+jobs:
+  merge-main-to-release:
+    runs-on: [self-hosted, linux, non-gpu]
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+        token: ${{ secrets.GH_MERGE_TOKEN }}
+
+    - name: Only run workflow from main branch
+      if: github.ref != 'refs/heads/main'
+      run: |
+        echo "This workflow should not be triggered with workflow_dispatch on a branch other than main"
+        exit 1
+
+    - name: Configure Git
+      run: |
+        git config --local user.email "actions@github.com"
+        git config --local user.name "Github Actions"
+
+    - name: Merge and push main to release
+      run: |
+        git checkout release
+        git merge origin/main
+        git push

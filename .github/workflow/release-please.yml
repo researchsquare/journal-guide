@@ -1,0 +1,41 @@
+name: release-please
+
+on:
+  push:
+    branches:
+    - release
+
+jobs:
+  release-please:
+    runs-on: [self-hosted, linux, non-gpu]
+    steps:
+    - uses: google-github-actions/release-please-action@v4
+      id: release
+      with:
+        target-branch: release
+        token: ${{ secrets.GH_MERGE_TOKEN }}
+
+    outputs:
+      release_created: ${{ steps.release.outputs.release_created }}
+      sha: ${{ steps.release.outputs.sha }}
+
+  merge-up-to-production:
+    runs-on: [self-hosted, linux, non-gpu]
+    needs: [release-please]
+    if: ${{ needs.release-please.outputs.release_created }}
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+        token: ${{ secrets.GH_MERGE_TOKEN }}
+
+    - name: Configure Git
+      run: |
+        git config --local user.email "actions@github.com"
+        git config --local user.name "Github Actions"
+
+    - name: Merge and push
+      run: |
+        git checkout production
+        git merge "${{ needs.release-please.outputs.sha }}"
+        git push
