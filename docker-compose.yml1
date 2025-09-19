@@ -1,0 +1,38 @@
+services:
+    journal-guide-app:
+        build:
+            context: .
+            args:
+                - AWS_ACCOUNT_ID=${AWS_ACCOUNT_ID}
+                - FONTAWESOME_NPM_AUTH_TOKEN_ARG=${FONTAWESOME_NPM_AUTH_TOKEN}
+            target: local
+        volumes:
+            - ${HOME}/.rs/.composer/auth.json:/root/.composer/auth.json
+            - ${HOME}/.rs/.ssh/id_rsa:/root/.ssh/id_rsa
+            - ${HOME}/.rs/.ssh/known_hosts:/root/.ssh/known_hosts
+            - ${HOME}/.rs/.bashrc:/root/.bashrc
+            - ${HOME}/.rs/journal-guide-gitconfig:/root/.gitconfig
+            - ./docker:/docker
+            - .:/site:cached
+        environment:
+            - APPLICATION_ENV=docker
+            - ARES_USER=${ARES_USER}
+            - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+            - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+            - COMPANY_ENV=aje
+            - LOCALIZATION_ENV=aje-row
+            - USER=${ARES_USER}
+        labels:
+            - "traefik.http.routers.journal-guide.rule=HostRegexp(`{subdomain:${BETA}-.*}`)"
+            - traefik.http.routers.journal-guide.tls=true
+        logging:
+            options:
+                max-size: 1M
+        extra_hosts:
+            - "host.docker.internal:host-gateway"
+
+        
+networks:
+    default:
+        name: rsc
+        external: true
