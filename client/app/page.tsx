@@ -1,27 +1,22 @@
 'use client';
 
-import { useSelector } from 'react-redux';
-import { RootState, useAppDispatch } from '../src/lib/store';
+import { useState } from 'react';
 import Header from '@/src/components/Header/Header';
 import Footer from '@/src/components/Footer/Footer';
-import Body from '@/src/components/Body/Body';
+import { CrossRefArticle } from '@/src/components/SearchBar/SearchBar';
+import Journals from '@/src/components/Journals/Journals';
+import SearchBar from '@/src/components/SearchBar/SearchBar';
 
 export default function AppPage() {
-  const dispatch = useAppDispatch();
-  const { data, loading, error } = useSelector((state: RootState) => state.user);
-
+const [journals, setJournals] = useState<[string, number][]>([]);
+const [articles, setArticles] = useState<CrossRefArticle[]>([]);
+const [loading, setLoading] = useState(false);
   return (
     <div>
       <Header />
-      {/* {loading && <p>Loading...</p>}
-      {error && <p style={{ color: 'red' }}>{error}</p>}
-      {data && (
-        <div>
-          <h2>{data.name}</h2>
-          <p>{data.email}</p>
-        </div>
-      )} */}
-      <Body/>
+      <SearchBar setJournals={setJournals} setArticles={setArticles} setLoading={setLoading} />
+      <Journals articles={articles} journals={journals} loading={loading} />
+      <br/>
       <Footer title="Footer" />
     </div>
   );

@@ -30,25 +30,25 @@ const LinkList = ({ title, links }: { title?: string; links: LinkItem[] }) => (
 
 const Footer = ({ title }: FooterProps) => {
   const footerLinks = {
-    forIndividuals: [
-      { name: 'FOR INDIVIDUALS', link: '/individuals' },
-      { name: 'FOR INSTITUTIONS & BUSINESSES', link: '/institutions' },
-      { name: 'WILEY NETWORK', link: '/network' },
-      { name: 'NEWSROOM', link: '/newsroom' },
-      { name: 'CAREERS', link: '/careers' },
-    ],
-    aboutWiley: [
-      { name: 'Corporate Responsibility', link: '/corporate-responsibility' },
-      { name: 'Corporate Governance', link: '/corporate-governance' },
-      { name: 'Leadership Team', link: '/leadership' },
-      { name: 'Investors', link: '/investors' },
-      { name: 'Artificial Intelligence', link: '/ai' },
-    ],
-    myAccount: [
-      { name: 'Help', link: '/help' },
-      { name: 'Contact Us', link: '/contact' },
-      { name: 'Cookie Preferences', link: '/cookies' },
-    ],
+    // forIndividuals: [
+    //   { name: 'FOR INDIVIDUALS', link: '/individuals' },
+    //   { name: 'FOR INSTITUTIONS & BUSINESSES', link: '/institutions' },
+    //   { name: 'WILEY NETWORK', link: '/network' },
+    //   { name: 'NEWSROOM', link: '/newsroom' },
+    //   { name: 'CAREERS', link: '/careers' },
+    // ],
+    // aboutWiley: [
+    //   { name: 'Corporate Responsibility', link: '/corporate-responsibility' },
+    //   { name: 'Corporate Governance', link: '/corporate-governance' },
+    //   { name: 'Leadership Team', link: '/leadership' },
+    //   { name: 'Investors', link: '/investors' },
+    //   { name: 'Artificial Intelligence', link: '/ai' },
+    // ],
+    // myAccount: [
+    //   { name: 'Help', link: '/help' },
+    //   { name: 'Contact Us', link: '/contact' },
+    //   { name: 'Cookie Preferences', link: '/cookies' },
+    // ],
   };
 
   const bottomLinks = [
@@ -95,7 +95,7 @@ const Footer = ({ title }: FooterProps) => {
       </section>
 
       {/* Main Footer Links */}
-      <section className="bg-dark py-5">
+      {/* <section className="bg-dark py-5">
         <div className="container">
           <div className="row">
             <div className="col-lg-3 col-md-4 mb-4 mb-md-0">
@@ -109,7 +109,7 @@ const Footer = ({ title }: FooterProps) => {
             </div>
           </div>
         </div>
-      </section>
+      </section> */}
 
       {/* Footer Bottom */}
       <section className="bg-dark border-top border-secondary py-3">
